@@ -1,0 +1,35 @@
+# Copyright (c) 2023 Endor AG
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  is31fl3194 LED driver for Lumissil Microsystems (a division of ISSI)
+
+compatible: "issi,is31fl3194"
+
+include: ["i2c-device.yaml", "led-controller.yaml"]
+
+properties:
+  brightness:
+    type: int
+    description: Default brightness of the LED.
+    enum:
+       - 1
+       - 2
+       - 3
+       - 4
+       - 5
+       - 6
+       - 7
+       - 8
+    default: 4
+
+child-binding:
+  properties:
+    label:
+      required: true
+
+    index:
+      required: true
+
+    color-mapping:
+      required: true

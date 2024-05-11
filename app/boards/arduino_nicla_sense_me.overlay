@@ -1,0 +1,25 @@
+#include <zephyr/dt-bindings/led/led.h>
+
+/ {
+	aliases {
+        is31fl3194 = &is31fl3194_nicla_sense_me;
+    };
+};
+
+
+/* I2C0 in datasheet */
+&i2c0 {
+	status = "okay";
+	is31fl3194_nicla_sense_me: is31fl3194@53 {
+        compatible = "issi,is31fl3194";
+		status = "okay";
+		reg = <0x53>;
+		brightness = <8>;
+
+		rgb_led {
+			label = "RGB LED";
+			index = <0>;
+			color-mapping = <LED_COLOR_ID_RED>,<LED_COLOR_ID_GREEN>,<LED_COLOR_ID_BLUE>;
+		  };
+    };
+};

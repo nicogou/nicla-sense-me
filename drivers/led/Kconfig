@@ -1,0 +1,3 @@
+if LED
+rsource "is31fl3194/Kconfig"
+endif # LED
