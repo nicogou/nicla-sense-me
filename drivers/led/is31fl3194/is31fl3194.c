@@ -209,6 +209,12 @@ static int is31fl3194_init_registers(const struct i2c_dt_spec *i2c)
 {
 	int status;
 
+	// Reset chip before starting
+	status = is31fl3194_write_reg(i2c, IS31FL3194_RESET, 0xC5);
+	if (status < 0) {
+		return status;
+	}
+
 	uint8_t chip_id;
 	status = is31fl3194_read_reg(i2c, IS31FL3194_PRODUCT_ID, &chip_id);
 	if (status < 0) {
@@ -284,19 +290,156 @@ static int is31fl3194_led_set_color(const struct device *dev, uint32_t led, uint
 	}
 
 	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_OUT1,
-				      color[2] >> scale_factor); // write blue channel
+				      color[2] >> scale_factor); // write channel 1
 	if (status < 0) {
 		return status;
 	}
 
 	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_OUT2,
-				      color[1] >> scale_factor); // write green channel
+				      color[1] >> scale_factor); // write channel 2
 	if (status < 0) {
 		return status;
 	}
 
 	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_OUT3,
-				      color[0] >> scale_factor); // write red channel
+				      color[0] >> scale_factor); // write channel 3
+	if (status < 0) {
+		return status;
+	}
+
+	// Pattern 1 color
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT1_R,
+				      color[2] >> scale_factor); // color 1
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT1_G,
+				      color[2] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT1_B,
+				      color[2] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT1_R,
+				      color[2] >> scale_factor); // color 2
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT1_G,
+				      color[2] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT1_B,
+				      color[2] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT1_R,
+				      color[2] >> scale_factor); // color 3
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT1_G,
+				      color[2] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT1_B,
+				      color[2] >> scale_factor);
+
+	// Pattern 2 color
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT2_R,
+				      color[1] >> scale_factor); // color 1
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT2_G,
+				      color[1] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT2_B,
+				      color[1] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT2_R,
+				      color[1] >> scale_factor); // color 2
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT2_G,
+				      color[1] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT2_B,
+				      color[1] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT2_R,
+				      color[1] >> scale_factor); // color 3
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT2_G,
+				      color[1] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT2_B,
+				      color[1] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	// Pattern 3 color
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT3_R,
+				      color[0] >> scale_factor); // color 1
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT3_G,
+				      color[0] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL1_PATT3_B,
+				      color[0] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT3_R,
+				      color[0] >> scale_factor); // color 2
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT3_G,
+				      color[0] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL2_PATT3_B,
+				      color[0] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT3_R,
+				      color[0] >> scale_factor); // color 3
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT3_G,
+				      color[0] >> scale_factor);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COL3_PATT3_B,
+				      color[0] >> scale_factor);
 	if (status < 0) {
 		return status;
 	}
@@ -312,6 +455,12 @@ static int is31fl3194_led_on(const struct device *dev, uint32_t led)
 
 	if (!led_info) {
 		return -ENODEV;
+	}
+
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_OP_CONFIG,
+				      0x01); // normal operation in current mode
+	if (status < 0) {
+		return status;
 	}
 
 	status = is31fl3194_write_reg(
@@ -357,8 +506,145 @@ static int is31fl3194_led_set_brightness(const struct device *dev, uint32_t led,
 static int is31fl3194_led_blink(const struct device *dev, uint32_t led, uint32_t delay_on,
 				uint32_t delay_off)
 {
-	LOG_WRN("Not implemented.");
-	return -ENOTSUP;
+	int status;
+	const struct is31fl3194_cfg *config = dev->config;
+	const struct led_info *led_info = is31fl3194_led_to_info(config, led);
+
+	if (!led_info) {
+		return -ENODEV;
+	}
+
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_OP_CONFIG,
+				      0x71); // select pattern mode.
+	if (status < 0) {
+		return status;
+	}
+
+	uint8_t t1_ts = t_0_03s << 4 | t_0_03s;
+	uint8_t t3_t2 = t_0_03s << 4 | (delay_on & 0x0F);
+	uint8_t tp_t4 = t_0_03s << 4 | (delay_off & 0x0F);
+	// Pattern 1 timing
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_TS_T1_Time_SET,
+				      t1_ts); // Rise time (T1) and start time (TS)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_T2_T3_Time_SET,
+				      t3_t2); // Hold time (T2) and fall time (T3)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_TP_T4_Time_SET,
+				      tp_t4); // Off time (T4) and time between pulses (TP)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_COLOR_CYC_TIME, once);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_NXT, 0x00);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_LOOP_TIMES, 0x00);
+	if (status < 0) {
+		return status;
+	}
+
+	// Pattern 2 timing
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_TS_T1_Time_SET,
+				      t1_ts); // Rise time (T1) and start time (TS)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_T2_T3_Time_SET,
+				      t3_t2); // Hold time (T2) and fall time (T3)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_TP_T4_Time_SET,
+				      tp_t4); // Off time (T4) and time between pulses (TP)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_COLOR_CYC_TIME, once);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_NXT, 0x00);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_LOOP_TIMES, 0x00);
+	if (status < 0) {
+		return status;
+	}
+
+	// Pattern 3 timing
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_TS_T1_Time_SET,
+				      t1_ts); // Rise time (T1) and start time (TS)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_T2_T3_Time_SET,
+				      t3_t2); // Hold time (T2) and fall time (T3)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_TP_T4_Time_SET,
+				      tp_t4); // Off time (T4) and time between pulses (TP)
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_COLOR_CYC_TIME, once);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_NXT, 0x00);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_LOOP_TIMES, 0x00);
+	if (status < 0) {
+		return status;
+	}
+
+	// Enable and update
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_COLOR_EN, 0x01);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_COLOR_EN, 0x01);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_COLOR_EN, 0x01);
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_COLOR_UPDATE,
+				      0xC5); // update colors
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P1_UPDATE,
+				      0xC5); // launch pattern 1
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P2_UPDATE,
+				      0xC5); // launch pattern 1
+	if (status < 0) {
+		return status;
+	}
+	status = is31fl3194_write_reg(&config->i2c, IS31FL3194_P3_UPDATE,
+				      0xC5); // launch pattern 1
+	if (status < 0) {
+		return status;
+	}
+
+	return 0;
 }
 
 static int is31fl3194_led_write_channels(const struct device *dev, uint32_t start_channel,
