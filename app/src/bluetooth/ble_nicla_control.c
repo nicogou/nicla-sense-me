@@ -48,11 +48,9 @@ uint8_t ble_nicla_control_process(const uint8_t *const data, uint16_t length)
 		return 0;
 	}
 
-	uint8_t opcode;
-	uint8_t len;
-	uint8_t payload[NICLA_CONTROL_DATA_MAX_LEN];
-	memcpy(&opcode, &data[0], sizeof(uint8_t));
-	memcpy(&len, &data[1], sizeof(uint8_t));
+	uint8_t opcode = data[0];
+	uint8_t len = data[1];
+	uint8_t *payload = malloc(len * sizeof(uint8_t));
 	memcpy(payload, &data[2], len * sizeof(uint8_t));
 
 	char str[80];
@@ -65,6 +63,8 @@ uint8_t ble_nicla_control_process(const uint8_t *const data, uint16_t length)
 		LOG_WRN("Unhandled opcode: %.2x", (uint8_t)opcode);
 		break;
 	}
+
+	free(payload);
 
 	return 1;
 }
