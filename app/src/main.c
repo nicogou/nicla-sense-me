@@ -5,6 +5,7 @@
 #include "bluetooth/ble_manager.h"
 #include "bhi_common/common.h"
 #include "bhi_euler/euler.h"
+#include "bhi_acc_gyro/acc_gyro.h"
 #include "bhi_klio/klio.h"
 #include <zephyr/drivers/led.h>
 
@@ -50,7 +51,7 @@ int main(void)
 			LOG_DBG("Boot successful. Kernel version %u.", version);
 		}
 
-		euler_register_callback(bhy2_get_dev());
+		acc_gyro_register_callback(bhy2_get_dev());
 	} else {
 		LOG_ERR("Host interface not ready. Exiting");
 		return 0;
@@ -60,11 +61,11 @@ int main(void)
 	rslt = bhy2_update_virtual_sensor_list(bhy2_get_dev());
 	print_api_error(rslt, bhy2_get_dev(), __FILE__, __LINE__);
 
-	euler_cfg_virtual_sensor(bhy2_get_dev());
+	acc_gyro_cfg_virtual_sensor(bhy2_get_dev());
 
 	while (rslt == BHY2_OK) {
 		if (!gpio_pin_get_dt(&bhi_int)) {
-			euler_process(bhy2_get_dev());
+			acc_gyro_process(bhy2_get_dev());
 		}
 	}
 

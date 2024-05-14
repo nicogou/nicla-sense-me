@@ -10,6 +10,9 @@
 #define WORK_BUFFER_SIZE 2048
 #define BHY2_RD_WR_LEN   256 /* MCU maximum read write length */
 #define EULER_SENSOR_ID  BHY2_SENSOR_ID_ORI_WU
+#define ACC_SENSOR_ID    BHY2_SENSOR_ID_ACC
+#define GYRO_SENSOR_ID   BHY2_SENSOR_ID_GYRO
+#define KLIO_SENSOR_ID   BHY2_SENSOR_ID_KLIO
 
 void init_bhi260ap(struct bhy2_dev *dev, enum bhy2_intf *intf);
 struct bhy2_dev *bhy2_get_dev();

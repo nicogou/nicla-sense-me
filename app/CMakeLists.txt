@@ -15,5 +15,6 @@ add_subdirectory(src/bluetooth)
 add_subdirectory(src/bhi_common)
 add_subdirectory(src/bhi_euler)
 add_subdirectory(src/bhi_klio)
+add_subdirectory(src/bhi_acc_gyro)
 
 target_sources(app PRIVATE src/main.c)

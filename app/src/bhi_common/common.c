@@ -74,7 +74,7 @@ void init_bhi260ap(struct bhy2_dev *dev, enum bhy2_intf *intf)
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
-#define UPLOAD_FIRMWARE_TO_FLASH
+// #define UPLOAD_FIRMWARE_TO_FLASH
 
 #ifdef UPLOAD_FIRMWARE_TO_FLASH
 #include "firmware/bhi260ap/BHI260AP_aux_BMM150-flash.fw.h"
@@ -149,23 +149,28 @@ void parse_meta_event(const struct bhy2_fifo_parse_data_info *callback_info, voi
 	case BHY2_META_EVENT_SAMPLE_RATE_CHANGED:
 		printf("%s Sample rate changed for sensor id %u, now %u\r\n", event_text, byte1,
 		       byte2);
-		klio_set_imu_odr(byte2);
-		klio_imu_state_update(IMU_STATE_ODR, byte2);
+		if (byte1 == KLIO_SENSOR_ID) {
+			klio_set_imu_odr(byte2);
+			klio_imu_state_update(IMU_STATE_ODR, byte2);
+		}
 		break;
 	case BHY2_META_EVENT_POWER_MODE_CHANGED:
 		printf("%s Power mode changed for sensor id %u, now %u\r\n", event_text, byte1,
 		       byte2);
-		klio_set_imu_started(byte2 == 7 ? 1 : 0);
-		klio_imu_state_update(IMU_STATE_POWER_MODE, byte2 == 7 ? 1 : 0);
-		if (klio_get_imu_started()) {
-			if (klio_get_learning_started()) {
-				klio_imu_state_update(IMU_STATE_LEARNING, 1);
-			} else if (klio_get_recognition_started()) {
-				klio_imu_state_update(IMU_STATE_RECOGNITION, 1);
+		if (byte1 == KLIO_SENSOR_ID) {
+
+			klio_set_imu_started(byte2 == 7 ? 1 : 0);
+			klio_imu_state_update(IMU_STATE_POWER_MODE, byte2 == 7 ? 1 : 0);
+			if (klio_get_imu_started()) {
+				if (klio_get_learning_started()) {
+					klio_imu_state_update(IMU_STATE_LEARNING, 1);
+				} else if (klio_get_recognition_started()) {
+					klio_imu_state_update(IMU_STATE_RECOGNITION, 1);
+				}
+			} else {
+				klio_imu_state_update(IMU_STATE_LEARNING, 0);
+				klio_imu_state_update(IMU_STATE_RECOGNITION, 0);
 			}
-		} else {
-			klio_imu_state_update(IMU_STATE_LEARNING, 0);
-			klio_imu_state_update(IMU_STATE_RECOGNITION, 0);
 		}
 		break;
 	case BHY2_META_EVENT_ALGORITHM_EVENTS:
@@ -174,9 +179,14 @@ void parse_meta_event(const struct bhy2_fifo_parse_data_info *callback_info, voi
 	case BHY2_META_EVENT_SENSOR_STATUS:
 		printf("%s Accuracy for sensor id %u changed to %u\r\n", event_text, byte1, byte2);
 		if (accuracy) {
-			*accuracy = byte2;
+			if (byte1 == ACC_SENSOR_ID) {
+				accuracy[0] = byte2;
+			} else if (byte1 == GYRO_SENSOR_ID) {
+				accuracy[1] = byte2;
+			} else {
+				*accuracy = byte2;
+			}
 		}
-
 		break;
 	case BHY2_META_EVENT_BSX_DO_STEPS_MAIN:
 		printf("%s BSX event (do steps main)\r\n", event_text);
@@ -559,32 +569,39 @@ char *get_sensor_error_text(uint8_t sensor_error)
 	case 0x00:
 		break;
 	case 0x10:
-		ret = "[Sensor error] Bootloader reports: Firmware Expected Version Mismatch";
+		ret = "[Sensor error] Bootloader reports: Firmware Expected Version "
+		      "Mismatch";
 		break;
 	case 0x11:
-		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Bad Header CRC";
+		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Bad "
+		      "Header CRC";
 		break;
 	case 0x12:
 		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: SHA Hash "
 		      "Mismatch";
 		break;
 	case 0x13:
-		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Bad Image CRC";
+		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Bad "
+		      "Image CRC";
 		break;
 	case 0x14:
-		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: ECDSA Signature "
+		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: ECDSA "
+		      "Signature "
 		      "Verification Failed";
 		break;
 	case 0x15:
-		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Bad Public Key "
+		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Bad "
+		      "Public Key "
 		      "CRC";
 		break;
 	case 0x16:
-		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Signed Firmware "
+		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: Signed "
+		      "Firmware "
 		      "Required";
 		break;
 	case 0x17:
-		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: FW Header "
+		ret = "[Sensor error] Bootloader reports: Firmware Upload Failed: FW "
+		      "Header "
 		      "Missing";
 		break;
 	case 0x19:
@@ -606,7 +623,8 @@ char *get_sensor_error_text(uint8_t sensor_error)
 		ret = "[Sensor error] Chained Firmware Error: Payload Entries Invalid";
 		break;
 	case 0x1F:
-		ret = "[Sensor error] Bootloader reports: Bootloader Error: OTP CRC Invalid";
+		ret = "[Sensor error] Bootloader reports: Bootloader Error: OTP CRC "
+		      "Invalid";
 		break;
 	case 0x20:
 		ret = "[Sensor error] Firmware Init Failed";
@@ -669,7 +687,8 @@ char *get_sensor_error_text(uint8_t sensor_error)
 		ret = "[Sensor error] Illegal Instruction Error";
 		break;
 	case 0x44:
-		ret = "[Sensor error] Bootloader reports: Unhandled Interrupt Error / Exception / "
+		ret = "[Sensor error] Bootloader reports: Unhandled Interrupt Error / "
+		      "Exception / "
 		      "Postmortem Available";
 		break;
 	case 0x45:

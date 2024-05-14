@@ -31,7 +31,7 @@ void euler_cfg_virtual_sensor(struct bhy2_dev *dev)
 	uint32_t report_latency_ms = 0; /* Report immediately */
 	rslt = bhy2_set_virt_sensor_cfg(EULER_SENSOR_ID, sample_rate, report_latency_ms, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
-	LOG_INF("Enable %s at %.2fHz.", get_sensor_name(EULER_SENSOR_ID), sample_rate);
+	LOG_INF("Enable %s at %.2fHz.", get_sensor_name(EULER_SENSOR_ID), (double)sample_rate);
 }
 
 void euler_process(struct bhy2_dev *dev)
@@ -63,11 +63,13 @@ void parse_euler(const struct bhy2_fifo_parse_data_info *callback_info, void *ca
 
 	if (accuracy) {
 		LOG_DBG("SID: %u; T: %u.%09u; h: %f, p: %f, r: %f; acc: %u",
-			callback_info->sensor_id, s, ns, data.heading * 360.0f / 32768.0f,
-			data.pitch * 360.0f / 32768.0f, data.roll * 360.0f / 32768.0f, *accuracy);
+			callback_info->sensor_id, s, ns, (double)(data.heading * 360.0f / 32768.0f),
+			(double)(data.pitch * 360.0f / 32768.0f),
+			(double)(data.roll * 360.0f / 32768.0f), *accuracy);
 	} else {
 		LOG_DBG("SID: %u; T: %u.%09u; h: %f, p: %f, r: %f", callback_info->sensor_id, s, ns,
-			data.heading * 360.0f / 32768.0f, data.pitch * 360.0f / 32768.0f,
-			data.roll * 360.0f / 32768.0f);
+			(double)(data.heading * 360.0f / 32768.0f),
+			(double)(data.pitch * 360.0f / 32768.0f),
+			(double)(data.roll * 360.0f / 32768.0f));
 	}
 }

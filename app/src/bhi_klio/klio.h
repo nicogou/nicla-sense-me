@@ -6,8 +6,7 @@
 #include "bhi_common/common.h"
 #include <bluetooth/ble_nicla_control.h>
 
-#define KLIO_SENSOR_ID BHY2_SENSOR_ID_KLIO
-#define PARAM_BUF_LEN  252
+#define PARAM_BUF_LEN 252
 
 typedef struct klio_runtime {
 	struct bhy2_dev *bhy2;
