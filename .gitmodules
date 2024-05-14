@@ -1,0 +1,3 @@
+[submodule "lib/BHI260/BHI260_Bosch"]
+	path = lib/BHI260AP/BHI260AP_Bosch
+	url = https://github.com/boschsensortec/BHY2_SensorAPI

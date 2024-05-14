@@ -1,0 +1,4 @@
+config BHI260AP
+	bool "BHY2 Sensor API from Bosch Sensortec"
+	help
+	  This option enables Bosch Sensortec's BHy2 API.
