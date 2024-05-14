@@ -9,6 +9,11 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(app LANGUAGES C)
 
+target_include_directories(app PRIVATE src)
+
 add_subdirectory(src/bluetooth)
+add_subdirectory(src/bhi_common)
+add_subdirectory(src/bhi_euler)
+add_subdirectory(src/bhi_klio)
 
 target_sources(app PRIVATE src/main.c)

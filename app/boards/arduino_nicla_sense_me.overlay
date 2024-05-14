@@ -1,11 +1,29 @@
 #include <zephyr/dt-bindings/led/led.h>
 
 / {
+	gpin {
+		compatible = "gpio-keys";
+		bhi260ap_int: bhi260ap_int {
+			gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
+			label = "BHI260AP interrupt pin";
+		};
+	};
+
 	aliases {
-        is31fl3194 = &is31fl3194_nicla_sense_me;
+        bhi260apint = &bhi260ap_int;
+		is31fl3194 = &is31fl3194_nicla_sense_me;
     };
 };
 
+&spi2 {
+	clock-frequency = < 20000000 >;
+    cs-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>, <&gpio0 31 GPIO_ACTIVE_LOW>;
+	bhi260ap: bhi260ap@1 {
+		compatible = "spi-device";
+		spi-max-frequency = < 20000000 >;
+		reg = <1>;
+	};
+};
 
 /* I2C0 in datasheet */
 &i2c0 {
