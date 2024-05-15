@@ -24,3 +24,6 @@ void print_api_error(int8_t rslt, struct bhy2_dev *dev, char *file, int line);
 char *get_sensor_error_text(uint8_t sensor_error);
 char *get_sensor_name(uint8_t sensor_id);
 char *get_klio_error(bhy2_klio_driver_error_state_t error);
+void common_register_callback(struct bhy2_dev *dev);
+uint8_t *common_get_accuracy();
+uint8_t *common_get_work_buffer();

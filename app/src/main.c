@@ -51,6 +51,7 @@ int main(void)
 			LOG_DBG("Boot successful. Kernel version %u.", version);
 		}
 
+		common_register_callback(bhy2_get_dev());
 		acc_gyro_register_callback(bhy2_get_dev());
 	} else {
 		LOG_ERR("Host interface not ready. Exiting");

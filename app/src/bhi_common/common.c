@@ -13,6 +13,14 @@ const struct spi_config bmi_spi_cfg = {
 
 static struct bhy2_dev bhy2;
 
+static uint8_t work_buffer[WORK_BUFFER_SIZE];
+static uint8_t accuracy[3]; /* Accuracy is reported as a meta event. It is being printed alongside
+			       the data.
+				   accuracy[0] = accelerometer accuracy.
+				   accuracy[1] = gyro accuracy
+				   accuracy[2] = euler accuracy
+				    */
+
 struct bhy2_dev *bhy2_get_dev()
 {
 	return &bhy2;
@@ -72,6 +80,31 @@ void init_bhi260ap(struct bhy2_dev *dev, enum bhy2_intf *intf)
 	hif_ctrl = 0;
 	rslt = bhy2_set_host_intf_ctrl(hif_ctrl, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
+}
+
+void common_register_callback(struct bhy2_dev *dev)
+{
+	int8_t rslt;
+
+	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT, parse_meta_event, accuracy,
+						 dev);
+	print_api_error(rslt, dev, __FILE__, __LINE__);
+	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT_WU, parse_meta_event,
+						 accuracy, dev);
+	print_api_error(rslt, dev, __FILE__, __LINE__);
+
+	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	print_api_error(rslt, dev, __FILE__, __LINE__);
+}
+
+uint8_t *common_get_accuracy()
+{
+	return accuracy;
+}
+
+uint8_t *common_get_work_buffer()
+{
+	return work_buffer;
 }
 
 // #define UPLOAD_FIRMWARE_TO_FLASH
@@ -183,8 +216,8 @@ void parse_meta_event(const struct bhy2_fifo_parse_data_info *callback_info, voi
 				accuracy[0] = byte2;
 			} else if (byte1 == GYRO_SENSOR_ID) {
 				accuracy[1] = byte2;
-			} else {
-				*accuracy = byte2;
+			} else if (byte1 == EULER_SENSOR_ID) {
+				accuracy[2] = byte2;
 			}
 		}
 		break;

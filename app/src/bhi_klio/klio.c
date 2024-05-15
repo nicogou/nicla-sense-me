@@ -69,10 +69,6 @@ void klio_imu_state_update(uint8_t data_type, uint8_t data)
 	ble_nicla_control_queue(NICLA_CONTROL_SYS_IMU_STATE_CHANGED, ble_data, sizeof(ble_data));
 }
 
-static uint8_t work_buffer[WORK_BUFFER_SIZE];
-static uint8_t
-	accuracy; /* Accuracy is reported as a meta event. It is being printed alongside the data */
-
 static klio_runtime_t klio_rt;
 /* Example pattern, BHI260 should be pointing upward, held level, and moved up and down at
  * about 1.5Hz */
@@ -150,16 +146,10 @@ void klio_register_callback(struct bhy2_dev *dev)
 {
 	int8_t rslt;
 
-	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT, parse_meta_event,
-						 (void *)&accuracy, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT_WU, parse_meta_event,
-						 (void *)&accuracy, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
 	rslt = bhy2_register_fifo_parse_callback(KLIO_SENSOR_ID, parse_klio, (void *)&klio_rt, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 
-	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
@@ -337,7 +327,7 @@ void klio_process(struct bhy2_dev *dev)
 	if (k_sem_take(&bhy2_sem, K_FOREVER)) { // Prevent another thread to talk to the sensor.
 		LOG_ERR("process device not ready");
 	}
-	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 	k_sem_give(&bhy2_sem);
 }

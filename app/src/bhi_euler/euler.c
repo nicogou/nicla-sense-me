@@ -2,25 +2,15 @@
 
 LOG_MODULE_REGISTER(bhi_euler, CONFIG_APP_LOG_LEVEL);
 
-static uint8_t work_buffer[WORK_BUFFER_SIZE];
-static uint8_t
-	accuracy; /* Accuracy is reported as a meta event. It is being printed alongside the data */
-
 void euler_register_callback(struct bhy2_dev *dev)
 {
 	int8_t rslt;
 
-	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT, parse_meta_event,
-						 (void *)&accuracy, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT_WU, parse_meta_event,
-						 (void *)&accuracy, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-	rslt = bhy2_register_fifo_parse_callback(EULER_SENSOR_ID, parse_euler, (void *)&accuracy,
-						 dev);
+	rslt = bhy2_register_fifo_parse_callback(EULER_SENSOR_ID, parse_euler,
+						 common_get_accuracy(), dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 
-	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
@@ -38,7 +28,7 @@ void euler_process(struct bhy2_dev *dev)
 {
 	int8_t rslt;
 	/* Data from the FIFO is read and the relevant callbacks if registered are called */
-	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
@@ -47,7 +37,6 @@ void parse_euler(const struct bhy2_fifo_parse_data_info *callback_info, void *ca
 	(void)callback_ref;
 	struct bhy2_data_orientation data;
 	uint32_t s, ns;
-	uint8_t *accuracy = (uint8_t *)callback_ref;
 	if (callback_info->data_size != 7) /* Check for a valid payload size. Includes sensor ID */
 	{
 		return;
@@ -61,15 +50,8 @@ void parse_euler(const struct bhy2_fifo_parse_data_info *callback_info, void *ca
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
 
-	if (accuracy) {
-		LOG_DBG("SID: %u; T: %u.%09u; h: %f, p: %f, r: %f; acc: %u",
-			callback_info->sensor_id, s, ns, (double)(data.heading * 360.0f / 32768.0f),
-			(double)(data.pitch * 360.0f / 32768.0f),
-			(double)(data.roll * 360.0f / 32768.0f), *accuracy);
-	} else {
-		LOG_DBG("SID: %u; T: %u.%09u; h: %f, p: %f, r: %f", callback_info->sensor_id, s, ns,
-			(double)(data.heading * 360.0f / 32768.0f),
-			(double)(data.pitch * 360.0f / 32768.0f),
-			(double)(data.roll * 360.0f / 32768.0f));
-	}
+	LOG_DBG("SID: %u; T: %u.%09u; h: %f, p: %f, r: %f; acc: %u", callback_info->sensor_id, s,
+		ns, (double)(data.heading * 360.0f / 32768.0f),
+		(double)(data.pitch * 360.0f / 32768.0f), (double)(data.roll * 360.0f / 32768.0f),
+		common_get_accuracy()[2]);
 }

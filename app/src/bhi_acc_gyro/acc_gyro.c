@@ -2,26 +2,18 @@
 
 LOG_MODULE_REGISTER(bhi_acc_gyro, CONFIG_APP_LOG_LEVEL);
 
-static uint8_t work_buffer[WORK_BUFFER_SIZE];
-static uint8_t accuracy[2]; /* Accuracy is reported as a meta event. It is being
-					       printed alongside the data */
-
 void acc_gyro_register_callback(struct bhy2_dev *dev)
 {
 	int8_t rslt;
 
-	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT, parse_meta_event, accuracy,
+	rslt = bhy2_register_fifo_parse_callback(ACC_SENSOR_ID, parse_acc, common_get_accuracy(),
 						 dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
-	rslt = bhy2_register_fifo_parse_callback(BHY2_SYS_ID_META_EVENT_WU, parse_meta_event,
-						 accuracy, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-	rslt = bhy2_register_fifo_parse_callback(ACC_SENSOR_ID, parse_acc, accuracy, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-	rslt = bhy2_register_fifo_parse_callback(GYRO_SENSOR_ID, parse_gyro, accuracy, dev);
+	rslt = bhy2_register_fifo_parse_callback(GYRO_SENSOR_ID, parse_gyro, common_get_accuracy(),
+						 dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 
-	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
@@ -42,7 +34,7 @@ void acc_gyro_process(struct bhy2_dev *dev)
 {
 	int8_t rslt;
 	/* Data from the FIFO is read and the relevant callbacks if registered are called */
-	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
@@ -66,7 +58,7 @@ void parse_acc(const struct bhy2_fifo_parse_data_info *callback_info, void *call
 
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns, (double)((float)data.x / 4096.0f), (double)((float)data.y / 4096.0f),
-		(double)((float)data.z / 4096.0f), accuracy[0]);
+		(double)((float)data.z / 4096.0f), common_get_accuracy()[0]);
 }
 
 void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *callback_ref)
@@ -92,5 +84,5 @@ void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *cal
 		(double)((float)data.x * (2 * 3.141592653589793f / 360.0f) / (32768.0f / 2000.0f)),
 		(double)((float)data.y * (2 * 3.141592653589793f / 360.0f) / (32768.0f / 2000.0f)),
 		(double)((float)data.z * (2 * 3.141592653589793f / 360.0f) / (32768.0f / 2000.0f)),
-		accuracy[1]);
+		common_get_accuracy()[1]);
 }
