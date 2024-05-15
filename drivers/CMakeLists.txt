@@ -9,3 +9,6 @@ add_subdirectory_ifdef(CONFIG_SENSOR sensor)
 
 # Out-of-tree drivers for led drivers
 add_subdirectory_ifdef(CONFIG_LED led)
+
+# Out-of-tree drivers for charger drivers
+add_subdirectory_ifdef(CONFIG_CHARGER charger)

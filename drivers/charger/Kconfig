@@ -1,0 +1,3 @@
+if CHARGER
+rsource "bq25120a/Kconfig"
+endif # CHARGER

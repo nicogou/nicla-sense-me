@@ -1,0 +1,21 @@
+config BQ25120A
+	bool "BQ25120A charger driver"
+	default y
+	depends on DT_HAS_TI_BQ25120A_ENABLED
+	select I2C
+	help
+	  Enable BQ25120A charger driver.
+
+config BQ25120A_ENABLE_LDO_ON_STARTUP
+	bool "Enable LDO output on driver initialization"
+	default n
+	depends on BQ25120A
+	help
+	  Enable LDO output on driver startup
+
+config BQ25120A_LDO_STARTUP_VALUE
+	int "Voltage of the LDO on startup"
+	depends on BQ25120A_ENABLE_LDO_ON_STARTUP
+	range 8 39
+	help
+	  LDO voltage value in 100mV.

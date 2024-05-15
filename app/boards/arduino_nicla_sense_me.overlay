@@ -12,6 +12,7 @@
 	aliases {
         bhi260apint = &bhi260ap_int;
 		is31fl3194 = &is31fl3194_nicla_sense_me;
+		bq25120a = &bq25120a_nicla_sense_me;
     };
 };
 
@@ -40,4 +41,10 @@
 			color-mapping = <LED_COLOR_ID_RED>,<LED_COLOR_ID_GREEN>,<LED_COLOR_ID_BLUE>;
 		  };
     };
+
+	bq25120a_nicla_sense_me: bq25120a@6a {
+		compatible = "ti,bq25120a";
+		status = "okay";
+		reg = <0x6a>;
+	};
 };

@@ -8,11 +8,16 @@
 #include "bhi_acc_gyro/acc_gyro.h"
 #include "bhi_klio/klio.h"
 #include <zephyr/drivers/led.h>
+#include <zephyr/drivers/charger.h>
+#include <app/drivers/bq25120a.h>
 
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
 
 #define NICLA_LED_DRIVER DT_ALIAS(is31fl3194)
 static const struct device *led_driver_dev = DEVICE_DT_GET_ANY(issi_is31fl3194);
+
+// #define NICLA_CHARGER DT_ALIAS(bq25120a)
+static const struct device *charger_dev = DEVICE_DT_GET_ANY(ti_bq25120a);
 
 #define BHI260AP_INT DT_ALIAS(bhi260apint)
 static const struct gpio_dt_spec bhi_int = GPIO_DT_SPEC_GET_OR(BHI260AP_INT, gpios, {0});
@@ -32,6 +37,10 @@ int main(void)
 
 	if (!device_is_ready(led_driver_dev)) {
 		LOG_ERR("LED driver not ready!");
+	}
+
+	if (!device_is_ready(charger_dev)) {
+		LOG_ERR("Charger not ready!");
 	}
 
 	ble_manager_init();
@@ -66,7 +75,7 @@ int main(void)
 
 	while (rslt == BHY2_OK) {
 		if (!gpio_pin_get_dt(&bhi_int)) {
-			common_fifo_process(bhy2_get_dev());
+			// common_fifo_process(bhy2_get_dev());
 		}
 	}
 

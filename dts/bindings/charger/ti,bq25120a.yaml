@@ -1,0 +1,17 @@
+# Copyright 2024 Google LLC
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  bq25120A Low IQ Highly Integrated Battery Charge Management Solution for Wearables
+  and IoT
+
+  The device has a single child node for the charger. For example:
+
+  bq25120a@6a {
+    compatible = "ti,bq25120a";
+    reg = <0x6a>;
+  };
+
+compatible: "ti,bq25120a"
+
+include: [battery.yaml, i2c-device.yaml]

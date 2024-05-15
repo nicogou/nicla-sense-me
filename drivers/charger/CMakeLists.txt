@@ -1,0 +1,1 @@
+add_subdirectory_ifdef(CONFIG_BQ25120A bq25120a)
