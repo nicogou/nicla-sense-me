@@ -27,3 +27,4 @@ char *get_klio_error(bhy2_klio_driver_error_state_t error);
 void common_register_callback(struct bhy2_dev *dev);
 uint8_t *common_get_accuracy();
 uint8_t *common_get_work_buffer();
+void common_fifo_process(struct bhy2_dev *dev);

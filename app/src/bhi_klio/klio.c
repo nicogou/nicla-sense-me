@@ -320,18 +320,6 @@ void klio_cfg_virtual_sensor(struct bhy2_dev *dev, bool start_learning, bool sta
 	}
 }
 
-void klio_process(struct bhy2_dev *dev)
-{
-	int8_t rslt;
-	/* Data from the FIFO is read and the relevant callbacks if registered are called */
-	if (k_sem_take(&bhy2_sem, K_FOREVER)) { // Prevent another thread to talk to the sensor.
-		LOG_ERR("process device not ready");
-	}
-	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-	k_sem_give(&bhy2_sem);
-}
-
 void klio_free()
 {
 	free(klio_rt.similarity_result_buf);

@@ -24,14 +24,6 @@ void euler_cfg_virtual_sensor(struct bhy2_dev *dev)
 	LOG_INF("Enable %s at %.2fHz.", get_sensor_name(EULER_SENSOR_ID), (double)sample_rate);
 }
 
-void euler_process(struct bhy2_dev *dev)
-{
-	int8_t rslt;
-	/* Data from the FIFO is read and the relevant callbacks if registered are called */
-	rslt = bhy2_get_and_process_fifo(common_get_work_buffer(), WORK_BUFFER_SIZE, dev);
-	print_api_error(rslt, dev, __FILE__, __LINE__);
-}
-
 void parse_euler(const struct bhy2_fifo_parse_data_info *callback_info, void *callback_ref)
 {
 	(void)callback_ref;

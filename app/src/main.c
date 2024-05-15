@@ -66,7 +66,7 @@ int main(void)
 
 	while (rslt == BHY2_OK) {
 		if (!gpio_pin_get_dt(&bhi_int)) {
-			acc_gyro_process(bhy2_get_dev());
+			common_fifo_process(bhy2_get_dev());
 		}
 	}
 

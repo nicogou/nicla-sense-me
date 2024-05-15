@@ -28,7 +28,6 @@ struct bhy2_dev *klio_get_dev();
 void klio_init_klio_rt(struct bhy2_dev *dev);
 void klio_register_callback(struct bhy2_dev *dev);
 void klio_cfg_virtual_sensor(struct bhy2_dev *dev, bool start_learning, bool start_recognition);
-void klio_process(struct bhy2_dev *dev);
 void klio_free();
 void print_klio_error(bhy2_klio_driver_error_state_t status, char *file, int line);
 void print_klio_status(struct bhy2_dev *bhy2, char *file, int line);

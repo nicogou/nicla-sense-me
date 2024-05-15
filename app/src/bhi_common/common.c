@@ -107,6 +107,14 @@ uint8_t *common_get_work_buffer()
 	return work_buffer;
 }
 
+void common_fifo_process(struct bhy2_dev *dev)
+{
+	int8_t rslt;
+	/* Data from the FIFO is read and the relevant callbacks if registered are called */
+	rslt = bhy2_get_and_process_fifo(work_buffer, WORK_BUFFER_SIZE, dev);
+	print_api_error(rslt, dev, __FILE__, __LINE__);
+}
+
 // #define UPLOAD_FIRMWARE_TO_FLASH
 
 #ifdef UPLOAD_FIRMWARE_TO_FLASH
