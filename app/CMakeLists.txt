@@ -17,5 +17,6 @@ add_subdirectory(src/bhi_common)
 add_subdirectory(src/bhi_euler)
 add_subdirectory(src/bhi_klio)
 add_subdirectory(src/bhi_acc_gyro)
+add_subdirectory(src/sensors)
 
 target_sources(app PRIVATE src/main.c)
