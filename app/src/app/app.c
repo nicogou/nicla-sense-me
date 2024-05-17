@@ -1,5 +1,7 @@
 #include "app.h"
 
+LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
+
 /* Forward declaration of state table */
 static const struct smf_state app_states[];
 
@@ -9,7 +11,7 @@ struct s_object s_obj;
 /* State IDLE */
 static void idle_entry(void *o)
 {
-	/* Do something */
+	LOG_INF("Idle state");
 }
 static void idle_run(void *o)
 {
@@ -17,13 +19,13 @@ static void idle_run(void *o)
 }
 static void idle_exit(void *o)
 {
-	/* Do something */
+	LOG_INF("Leaving Idle state");
 }
 
 /* State RECORDING */
 static void recording_entry(void *o)
 {
-	/* Do something */
+	LOG_INF("Recording state");
 }
 static void recording_run(void *o)
 {
@@ -31,7 +33,7 @@ static void recording_run(void *o)
 }
 static void recording_exit(void *o)
 {
-	/* Do something */
+	LOG_INF("Leaving Recording state");
 }
 
 /* Populate state table */
