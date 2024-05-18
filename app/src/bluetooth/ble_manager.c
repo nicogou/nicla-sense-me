@@ -2,6 +2,8 @@
 
 LOG_MODULE_REGISTER(BLE_MANAGER, LOG_LEVEL_DBG);
 
+ZBUS_CHAN_DECLARE(instructions_chan);
+
 static const struct bt_data ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
@@ -46,6 +48,10 @@ static void connected(struct bt_conn *conn, uint8_t err)
 	if (ret) {
 		LOG_ERR("%s: MTU exchange failed (err %d)", __func__, err);
 	}
+
+	// Warn state machine that a connection occured.
+	instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_BLE, .type = BLE_CONNECTED};
+	zbus_chan_pub(&instructions_chan, &msg, K_MSEC(100));
 }
 
 static void disconnected(struct bt_conn *conn, uint8_t reason)
@@ -65,6 +71,10 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 		bt_conn_unref(current_conn);
 		current_conn = NULL;
 	}
+
+	// Warn state machine that a disconnection occured.
+	instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_BLE, .type = BLE_DISCONNECTED};
+	zbus_chan_pub(&instructions_chan, &msg, K_MSEC(100));
 }
 
 #ifdef CONFIG_NICLA_SERVICE_SECURITY_ENABLED
