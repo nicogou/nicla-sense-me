@@ -28,5 +28,7 @@ typedef enum {
 /////// Recognition Commands
 #define NICLA_CONTROL_RECOGNITION_START       0x30 // Start/stop recognition
 #define NICLA_CONTROL_RECOGNITION_COUNT       0x31
+/////// Recording Commands
+#define NICLA_CONTROL_RECORDING_START_STOP    0x40 // Start/stop recording
 ///// Device BLE Commands
 #define NICLA_CONTROL_BLE_DISCONN             0x60 // Force a disconnect from device side

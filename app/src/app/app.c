@@ -28,6 +28,12 @@ static void idle_run(void *o)
 		}
 		break;
 
+	case INSTRUCTION_SOURCE_APP:
+		if (s->instruction.type == RECORDING_START) {
+			smf_set_state(SMF_CTX(&s_obj), &app_states[RECORDING]);
+		}
+		break;
+
 	default:
 		LOG_WRN("Unhandled instruction in Idle state : %u", s->instruction.source);
 		break;
@@ -42,6 +48,7 @@ static void idle_exit(void *o)
 static void recording_entry(void *o)
 {
 	LOG_INF("Recording state");
+	imu_start(100.0, 0);
 }
 static void recording_run(void *o)
 {
@@ -55,6 +62,14 @@ static void recording_run(void *o)
 		}
 		break;
 
+	case INSTRUCTION_SOURCE_APP:
+		if (s->instruction.type == RECORDING_STOP) {
+			smf_set_state(SMF_CTX(&s_obj), &app_states[IDLE]);
+		} else if (s->instruction.type == RECORDING_START) {
+			LOG_WRN("Recording already started");
+		}
+		break;
+
 	default:
 		LOG_WRN("Unhandled instruction in Recording state : %u", s->instruction.source);
 		break;
@@ -63,6 +78,7 @@ static void recording_run(void *o)
 static void recording_exit(void *o)
 {
 	LOG_INF("Leaving Recording state");
+	imu_stop();
 }
 
 /* Populate state table */

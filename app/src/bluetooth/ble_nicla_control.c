@@ -2,6 +2,8 @@
 
 LOG_MODULE_REGISTER(ble_nicla_control, LOG_LEVEL_DBG);
 
+ZBUS_CHAN_DECLARE(instructions_chan);
+
 static uint8_t _queue_command(uint8_t opcode, uint8_t *data, uint8_t length)
 {
 	if (length > NICLA_CONTROL_DATA_MAX_LEN) {
@@ -59,6 +61,21 @@ uint8_t ble_nicla_control_process(const uint8_t *const data, uint16_t length)
 	LOG_HEXDUMP_INF(data, length, str);
 
 	switch (opcode) {
+	case NICLA_CONTROL_RECORDING_START_STOP:
+		if (len != 1) {
+			_resp_err(NICLA_CONTROL_RECORDING_START_STOP);
+			break;
+		}
+
+		instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_APP};
+		if (payload[0]) {
+			msg.type = RECORDING_START;
+		} else {
+			msg.type = RECORDING_STOP;
+		}
+		zbus_chan_pub(&instructions_chan, &msg, K_MSEC(100));
+		break;
+
 	default:
 		LOG_WRN("Unhandled opcode: %.2x", (uint8_t)opcode);
 		break;

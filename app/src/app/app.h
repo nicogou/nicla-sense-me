@@ -6,6 +6,7 @@
 
 #include "common.h"
 #include "nicla_zbus/nicla_zbus.h"
+#include "sensors/imu/imu.h"
 
 /* User defined object */
 struct s_object {
