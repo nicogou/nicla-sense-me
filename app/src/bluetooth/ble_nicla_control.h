@@ -8,6 +8,7 @@
 
 #include "ble_defines.h"
 #include "ble_manager.h"
+#include "app/common.h"
 
 #include <hal/nrf_power.h>
 #include <stdlib.h>

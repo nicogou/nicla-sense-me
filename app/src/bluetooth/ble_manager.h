@@ -15,6 +15,7 @@
 
 #include "nicla_service.h"
 #include "ble_nicla_control.h"
+#include "nicla_zbus/nicla_zbus.h"
 
 #define STACKSIZE 512 // CONFIG_BT_NUS_THREAD_STACK_SIZE
 #define PRIORITY  7
@@ -25,7 +26,7 @@
 typedef enum {
 	BLE_DISCONNECTED,
 	BLE_CONNECTED,
-} ble_event_data_t;
+} ble_instruction_type_t;
 
 uint8_t ble_manager_init();
 uint32_t ble_manager_start_advertising();

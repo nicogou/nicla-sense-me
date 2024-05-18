@@ -11,10 +11,13 @@ project(app LANGUAGES C)
 
 target_include_directories(app PRIVATE src)
 
+add_subdirectory(src/app)
 add_subdirectory(src/bluetooth)
 add_subdirectory(src/bhi_common)
 add_subdirectory(src/bhi_euler)
 add_subdirectory(src/bhi_klio)
 add_subdirectory(src/bhi_acc_gyro)
+add_subdirectory(src/sensors)
+add_subdirectory(src/nicla_zbus)
 
 target_sources(app PRIVATE src/main.c)

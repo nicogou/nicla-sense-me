@@ -17,11 +17,10 @@ void acc_gyro_register_callback(struct bhy2_dev *dev)
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 }
 
-void acc_gyro_cfg_virtual_sensor(struct bhy2_dev *dev)
+void acc_gyro_cfg_virtual_sensor(struct bhy2_dev *dev, float sample_rate,
+				 uint32_t report_latency_ms)
 {
 	int8_t rslt;
-	float sample_rate = 100.0;      /* Read out data measured at 100Hz */
-	uint32_t report_latency_ms = 0; /* Report immediately */
 	rslt = bhy2_set_virt_sensor_cfg(ACC_SENSOR_ID, sample_rate, report_latency_ms, dev);
 	print_api_error(rslt, dev, __FILE__, __LINE__);
 	LOG_INF("Enable %s at %.2fHz.", get_sensor_name(ACC_SENSOR_ID), (double)sample_rate);
