@@ -7,14 +7,11 @@
 
 #include <zephyr/drivers/led.h>
 #include <zephyr/drivers/charger.h>
-#include <app/drivers/bq25120a.h>
 
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
 
-#define NICLA_LED_DRIVER DT_ALIAS(is31fl3194)
 static const struct device *led_driver_dev = DEVICE_DT_GET_ANY(issi_is31fl3194);
 
-// #define NICLA_CHARGER DT_ALIAS(bq25120a)
 static const struct device *charger_dev = DEVICE_DT_GET_ANY(ti_bq25120a);
 
 int main(void)
