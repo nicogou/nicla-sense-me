@@ -13,3 +13,5 @@
 
 int imu_init();
 int imu_start_acq();
+void imu_start(float sample_freq, uint32_t latency);
+void imu_stop();

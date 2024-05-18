@@ -7,6 +7,16 @@ static const struct gpio_dt_spec bhi_int = GPIO_DT_SPEC_GET_OR(BHI260AP_INT, gpi
 
 static enum bhy2_intf intf;
 
+void imu_start(float sample_freq, uint32_t latency)
+{
+	acc_gyro_cfg_virtual_sensor(bhy2_get_dev(), sample_freq, latency);
+}
+
+void imu_stop()
+{
+	imu_start(0.0, 0);
+}
+
 int imu_init()
 {
 	int8_t rslt;
@@ -38,8 +48,7 @@ int imu_init()
 	rslt = bhy2_update_virtual_sensor_list(bhy2_get_dev());
 	print_api_error(rslt, bhy2_get_dev(), __FILE__, __LINE__);
 
-	acc_gyro_cfg_virtual_sensor(bhy2_get_dev(), 0.0, 0);
-
+	imu_stop();
 	return 0;
 }
 
