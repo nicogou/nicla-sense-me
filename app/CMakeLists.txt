@@ -19,5 +19,6 @@ add_subdirectory(src/bhi_klio)
 add_subdirectory(src/bhi_acc_gyro)
 add_subdirectory(src/sensors)
 add_subdirectory(src/nicla_zbus)
+add_subdirectory(src/nicla_sd)
 
 target_sources(app PRIVATE src/main.c)

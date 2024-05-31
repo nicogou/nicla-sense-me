@@ -4,6 +4,7 @@
 #include <app_version.h>
 #include "app/app.h"
 #include "bluetooth/ble_manager.h"
+#include "nicla_sd/nicla_sd.h"
 
 #include <zephyr/drivers/led.h>
 #include <zephyr/drivers/charger.h>
@@ -29,6 +30,8 @@ int main(void)
 
 	ble_manager_init();
 	ble_manager_start_advertising();
+
+	nicla_sd_init();
 
 	app_init();
 
