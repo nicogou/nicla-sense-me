@@ -5,6 +5,8 @@ LOG_MODULE_REGISTER(imu, CONFIG_APP_LOG_LEVEL);
 #define BHI260AP_INT DT_ALIAS(bhi260apint)
 static const struct gpio_dt_spec bhi_int = GPIO_DT_SPEC_GET_OR(BHI260AP_INT, gpios, {0});
 
+static struct gpio_callback imu_cb_data;
+
 static enum bhy2_intf intf;
 
 void imu_start(float sample_freq, uint32_t latency)
@@ -17,11 +19,39 @@ void imu_stop()
 	imu_start(0.0, 0);
 }
 
+static void imu_int_cb(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+{
+	common_fifo_process(bhy2_get_dev());
+}
+
 int imu_init()
 {
 	int8_t rslt;
 	uint8_t boot_status;
 	uint16_t version = 0;
+	int ret;
+
+	if (!gpio_is_ready_dt(&bhi_int)) {
+		printk("Error: bhi_int device %s is not ready\n", bhi_int.port->name);
+		return 0;
+	}
+
+	ret = gpio_pin_configure_dt(&bhi_int, GPIO_INPUT);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n", ret, bhi_int.port->name,
+		       bhi_int.pin);
+		return 0;
+	}
+
+	ret = gpio_pin_interrupt_configure_dt(&bhi_int, GPIO_INT_EDGE_TO_INACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n", ret,
+		       bhi_int.port->name, bhi_int.pin);
+		return 0;
+	}
+
+	gpio_init_callback(&imu_cb_data, imu_int_cb, BIT(bhi_int.pin));
+	gpio_add_callback(bhi_int.port, &imu_cb_data);
 
 	init_bhi260ap(bhy2_get_dev(), &intf);
 
@@ -57,10 +87,7 @@ static void imu_thread_run()
 	imu_init();
 
 	while (true) {
-		// TODO: do that as an interrupt.
-		if (!gpio_pin_get_dt(&bhi_int)) {
-			common_fifo_process(bhy2_get_dev());
-		}
+		k_msleep(1);
 	}
 }
 

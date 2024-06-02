@@ -2,6 +2,7 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/drivers/gpio.h>
 
 #include "bhi_common/common.h"
 #include "bhi_euler/euler.h"
