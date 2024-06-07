@@ -3,10 +3,6 @@
 #include <zephyr/dt-bindings/display/panel.h>
 
 / {
-	chosen {
-        zephyr,display = &gc9a01_xiao_round_display;
-    };
-
 	gpin {
 		compatible = "gpio-keys";
 		bhi260ap_int: bhi260ap_int {
@@ -75,17 +71,8 @@
 		};
 		spi-max-frequency = <DT_FREQ_M(24)>;
 	};
+};
 
-	gc9a01_xiao_round_display: gc9a01@0 {
-        status = "okay";
-        compatible = "galaxycore,gc9x01x";
-        reg = <0>;
-        spi-max-frequency = <DT_FREQ_M(100)>;
-        cmd-data-gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
-		reset-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
-        pixel-format = <16>;
-        width = <240>;
-        height = <240>;
-		display-inversion;
-    };
+&uicr {
+	/delete-property/ gpio-as-nreset;
 };
