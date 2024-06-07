@@ -48,7 +48,7 @@ static void idle_exit(void *o)
 static void recording_entry(void *o)
 {
 	LOG_INF("Recording state");
-	imu_start(100.0, 0);
+	imu_start(IMU_SAMPLE_RATE, 1000);
 }
 static void recording_run(void *o)
 {
