@@ -15,3 +15,8 @@ description: |
 compatible: "ti,bq25120a"
 
 include: [battery.yaml, i2c-device.yaml]
+
+properties:
+  chip-disable-gpios:
+    type: phandle-array
+    description: Chip Disabled (CD) GPIO of the charger.

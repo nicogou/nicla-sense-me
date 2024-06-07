@@ -48,6 +48,7 @@
 		compatible = "ti,bq25120a";
 		status = "okay";
 		reg = <0x6a>;
+		chip-disable-gpios = <&gpio0 25 GPIO_ACTIVE_LOW>;
 	};
 };
 
