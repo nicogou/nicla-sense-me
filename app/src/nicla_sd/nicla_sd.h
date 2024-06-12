@@ -19,6 +19,9 @@
 #define SOME_DIR_NAME     "some"
 #define SOME_REQUIRED_LEN MAX(sizeof(SOME_FILE_NAME), sizeof(SOME_DIR_NAME))
 
+#define SESSION_DIR_NAME     "session_"
+
 int lsdir(const char *path);
 bool create_some_entries(const char *base_path);
+int nicla_sd_create_session();
 void nicla_sd_init();

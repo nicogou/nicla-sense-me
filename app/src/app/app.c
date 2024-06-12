@@ -1,4 +1,5 @@
 #include "app.h"
+#include <nicla_sd/nicla_sd.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -48,7 +49,15 @@ static void idle_exit(void *o)
 static void recording_entry(void *o)
 {
 	LOG_INF("Recording state");
-	imu_start(IMU_SAMPLE_RATE, 1000);
+	int res = nicla_sd_create_session();
+	if (res < 0){
+		LOG_WRN("Unable to create session directory, returning to idle state.");
+		instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_APP, .type = RECORDING_STOP};
+		zbus_chan_pub(&instructions_chan, &msg, K_MSEC(100));
+	} else {
+		LOG_INF("Creating session n°%i", res);
+		imu_start(IMU_SAMPLE_RATE, 1000);
+	}
 }
 static void recording_run(void *o)
 {
