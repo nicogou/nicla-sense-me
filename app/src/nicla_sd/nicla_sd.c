@@ -161,6 +161,7 @@ bool create_some_entries(const char *base_path)
 int nicla_sd_create_session(){
 	char path[MAX_PATH];
 	int base = strlen(disk_mount_pt);
+	struct fs_file_t data_file;
 
 	int nb = get_session_nb(disk_mount_pt);
 	if (nb < 0){
@@ -177,6 +178,7 @@ int nicla_sd_create_session(){
 	path[base] = 0;
 
 	strcat(&path[base], nb_str);
+	base += strlen(nb_str);
 	free(nb_str);
 
 	int res = fs_mkdir(path);
@@ -184,6 +186,15 @@ int nicla_sd_create_session(){
 		LOG_ERR("Failed to create dir %s", path);
 		return res;
 	}
+
+	fs_file_t_init(&data_file);
+	strcat(&path[base], "/"SESSION_FILE_NAME);
+	res = fs_open(&data_file, path, FS_O_CREATE);
+	if (res != 0) {
+		LOG_ERR("Failed to create data_file %s (%i)", path, res);
+		return res;
+	}
+	fs_close(&data_file);
 
 	return nb;
 }

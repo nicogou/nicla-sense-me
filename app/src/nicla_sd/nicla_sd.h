@@ -20,6 +20,7 @@
 #define SOME_REQUIRED_LEN MAX(sizeof(SOME_FILE_NAME), sizeof(SOME_DIR_NAME))
 
 #define SESSION_DIR_NAME     "session_"
+#define SESSION_FILE_NAME     "data.csv"
 
 int lsdir(const char *path);
 bool create_some_entries(const char *base_path);
