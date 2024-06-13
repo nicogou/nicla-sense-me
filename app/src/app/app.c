@@ -74,9 +74,14 @@ static void recording_run(void *o)
 
 	case INSTRUCTION_SOURCE_APP:
 		if (s->instruction.type == RECORDING_STOP) {
-			smf_set_state(SMF_CTX(&s_obj), &app_states[IDLE]);
+			/* Don't set state directly here. Instead stop the IMU and wait for meta events
+			   to report that sample rate is down to 0 for both acc and gyro.
+			*/
+			imu_stop();
 		} else if (s->instruction.type == RECORDING_START) {
 			LOG_WRN("Recording already started");
+		} else if (s->instruction.type == RECORDING_GO_TO_IDLE) {
+			smf_set_state(SMF_CTX(&s_obj), &app_states[IDLE]);
 		}
 		break;
 
@@ -88,7 +93,6 @@ static void recording_run(void *o)
 static void recording_exit(void *o)
 {
 	LOG_INF("Leaving Recording state");
-	imu_stop();
 	nicla_sd_end_current_session();
 	nicla_sd_unmount();
 }

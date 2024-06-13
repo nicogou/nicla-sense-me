@@ -1,6 +1,9 @@
 #include "common.h"
+#include "nicla_zbus/nicla_zbus.h"
 
 LOG_MODULE_REGISTER(bhi_common, CONFIG_APP_LOG_LEVEL);
+
+ZBUS_CHAN_DECLARE(instructions_chan);
 
 #define SPI_BHI260AP DT_NODELABEL(spi2)
 // SPI configuration structures
@@ -12,6 +15,9 @@ const struct spi_config bmi_spi_cfg = {
 };
 
 static struct bhy2_dev bhy2;
+
+static bool acc_turned_off = true;
+static bool gyro_turned_off = true;
 
 static uint8_t work_buffer[WORK_BUFFER_SIZE];
 static uint8_t accuracy[3]; /* Accuracy is reported as a meta event. It is being printed alongside
@@ -193,6 +199,27 @@ void parse_meta_event(const struct bhy2_fifo_parse_data_info *callback_info, voi
 		if (byte1 == KLIO_SENSOR_ID) {
 			klio_set_imu_odr(byte2);
 			klio_imu_state_update(IMU_STATE_ODR, byte2);
+		}
+
+		if (byte1 == ACC_SENSOR_ID){
+			if (byte2 == 0) {
+				acc_turned_off = true;
+			} else {
+				acc_turned_off = false;
+			}
+		}
+		if (byte1 == GYRO_SENSOR_ID){
+			if (byte2 == 0) {
+				gyro_turned_off = true;
+			} else {
+				gyro_turned_off = false;
+			}
+		}
+
+		if (acc_turned_off && gyro_turned_off){
+			/* If both acc and gyro were turned off, get out of recording state */
+			instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_APP, .type = RECORDING_GO_TO_IDLE};
+			zbus_chan_pub(&instructions_chan, &msg, K_NO_WAIT);
 		}
 		break;
 	case BHY2_META_EVENT_POWER_MODE_CHANGED:
