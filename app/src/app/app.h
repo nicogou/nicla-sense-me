@@ -8,7 +8,7 @@
 #include "nicla_zbus/nicla_zbus.h"
 #include "sensors/imu/imu.h"
 
-#define IMU_SAMPLE_RATE 200
+#define IMU_SAMPLE_RATE 100
 
 /* User defined object */
 struct s_object {
