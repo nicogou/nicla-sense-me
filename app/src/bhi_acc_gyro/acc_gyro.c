@@ -48,7 +48,7 @@ void parse_acc(const struct bhy2_fifo_parse_data_info *callback_info, void *call
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
 
-	sensor_buffer_put_acc(data);
+	sensor_buffer_put_acc(data, timestamp);
 	/*
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns, (double)((float)data.x / 4096.0f), (double)((float)data.y / 4096.0f),
@@ -74,7 +74,7 @@ void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *cal
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
 
-	sensor_buffer_put_gyro(data);
+	sensor_buffer_put_gyro(data, timestamp);
 	/*
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns,
