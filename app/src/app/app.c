@@ -49,6 +49,7 @@ static void idle_exit(void *o)
 static void recording_entry(void *o)
 {
 	LOG_INF("Recording state");
+	nicla_sd_init();
 	int res = nicla_sd_create_session();
 	if (res < 0){
 		LOG_WRN("Unable to create session directory, returning to idle state.");
@@ -88,6 +89,8 @@ static void recording_exit(void *o)
 {
 	LOG_INF("Leaving Recording state");
 	imu_stop();
+	nicla_sd_end_current_session();
+	nicla_sd_unmount();
 }
 
 /* Populate state table */

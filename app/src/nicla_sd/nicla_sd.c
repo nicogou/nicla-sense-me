@@ -7,6 +7,9 @@ LOG_MODULE_REGISTER(nicla_sd, CONFIG_APP_LOG_LEVEL);
 
 static const char *disk_mount_pt = DISK_MOUNT_PT;
 
+static int current_session_nb = 0;
+struct fs_file_t current_session_data_file;
+
 static FATFS fat_fs;
 /* mounting info */
 static struct fs_mount_t mp = {
@@ -161,7 +164,6 @@ bool create_some_entries(const char *base_path)
 int nicla_sd_create_session(){
 	char path[MAX_PATH];
 	int base = strlen(disk_mount_pt);
-	struct fs_file_t data_file;
 
 	int nb = get_session_nb(disk_mount_pt);
 	if (nb < 0){
@@ -187,16 +189,27 @@ int nicla_sd_create_session(){
 		return res;
 	}
 
-	fs_file_t_init(&data_file);
+	fs_file_t_init(&current_session_data_file);
 	strcat(&path[base], "/"SESSION_FILE_NAME);
-	res = fs_open(&data_file, path, FS_O_CREATE);
+	res = fs_open(&current_session_data_file, path, FS_O_RDWR | FS_O_CREATE);
 	if (res != 0) {
 		LOG_ERR("Failed to create data_file %s (%i)", path, res);
 		return res;
 	}
-	fs_close(&data_file);
+
+	fs_write(&current_session_data_file, SESSION_FILE_HEADER, strlen(SESSION_FILE_HEADER));
+
+	current_session_nb = nb;
 
 	return nb;
+}
+
+int nicla_sd_end_current_session(){
+	return fs_close(&current_session_data_file);
+}
+
+int nicla_sd_unmount(){
+	return fs_unmount(&mp);
 }
 
 void nicla_sd_init()
@@ -244,6 +257,4 @@ void nicla_sd_init()
 	} else {
 		LOG_DBG("Error mounting disk.");
 	}
-
-	//fs_unmount(&mp);
 }
