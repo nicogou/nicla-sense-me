@@ -191,7 +191,7 @@ int nicla_sd_create_session(){
 	}
 
 	fs_file_t_init(&current_session_acc_file);
-	strcat(&path[base], "/"SESSION_ACC_FILE_NAME);
+	strcat(&path[base], "/"SESSION_ACC_FILE_NAME SESSION_FILE_EXTENSION);
 	res = fs_open(&current_session_acc_file, path, FS_O_RDWR | FS_O_CREATE);
 	if (res != 0) {
 		LOG_ERR("Failed to create data_file %s (%i)", path, res);
@@ -200,15 +200,15 @@ int nicla_sd_create_session(){
 
 	path[base] = 0;
 	fs_file_t_init(&current_session_gyro_file);
-	strcat(&path[base], "/"SESSION_GYRO_FILE_NAME);
+	strcat(&path[base], "/"SESSION_GYRO_FILE_NAME SESSION_FILE_EXTENSION);
 	res = fs_open(&current_session_gyro_file, path, FS_O_RDWR | FS_O_CREATE);
 	if (res != 0) {
 		LOG_ERR("Failed to create data_file %s (%i)", path, res);
 		return res;
 	}
 
-	fs_write(&current_session_acc_file, SESSION_FILE_HEADER, strlen(SESSION_FILE_HEADER));
-	fs_write(&current_session_gyro_file, SESSION_FILE_HEADER, strlen(SESSION_FILE_HEADER));
+	fs_write(&current_session_acc_file, SESSION_FILE_HEADER(SESSION_ACC_FILE_NAME), strlen(SESSION_FILE_HEADER(SESSION_ACC_FILE_NAME)));
+	fs_write(&current_session_gyro_file, SESSION_FILE_HEADER(SESSION_GYRO_FILE_NAME), strlen(SESSION_FILE_HEADER(SESSION_GYRO_FILE_NAME)));
 
 	current_session_nb = nb;
 
