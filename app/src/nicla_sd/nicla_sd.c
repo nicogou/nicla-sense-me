@@ -8,7 +8,8 @@ LOG_MODULE_REGISTER(nicla_sd, CONFIG_APP_LOG_LEVEL);
 static const char *disk_mount_pt = DISK_MOUNT_PT;
 
 static int current_session_nb = 0;
-struct fs_file_t current_session_data_file;
+struct fs_file_t current_session_acc_file;
+struct fs_file_t current_session_gyro_file;
 
 static FATFS fat_fs;
 /* mounting info */
@@ -189,15 +190,25 @@ int nicla_sd_create_session(){
 		return res;
 	}
 
-	fs_file_t_init(&current_session_data_file);
-	strcat(&path[base], "/"SESSION_FILE_NAME);
-	res = fs_open(&current_session_data_file, path, FS_O_RDWR | FS_O_CREATE);
+	fs_file_t_init(&current_session_acc_file);
+	strcat(&path[base], "/"SESSION_ACC_FILE_NAME);
+	res = fs_open(&current_session_acc_file, path, FS_O_RDWR | FS_O_CREATE);
 	if (res != 0) {
 		LOG_ERR("Failed to create data_file %s (%i)", path, res);
 		return res;
 	}
 
-	fs_write(&current_session_data_file, SESSION_FILE_HEADER, strlen(SESSION_FILE_HEADER));
+	path[base] = 0;
+	fs_file_t_init(&current_session_gyro_file);
+	strcat(&path[base], "/"SESSION_GYRO_FILE_NAME);
+	res = fs_open(&current_session_gyro_file, path, FS_O_RDWR | FS_O_CREATE);
+	if (res != 0) {
+		LOG_ERR("Failed to create data_file %s (%i)", path, res);
+		return res;
+	}
+
+	fs_write(&current_session_acc_file, SESSION_FILE_HEADER, strlen(SESSION_FILE_HEADER));
+	fs_write(&current_session_gyro_file, SESSION_FILE_HEADER, strlen(SESSION_FILE_HEADER));
 
 	current_session_nb = nb;
 
@@ -205,7 +216,17 @@ int nicla_sd_create_session(){
 }
 
 int nicla_sd_end_current_session(){
-	return fs_close(&current_session_data_file);
+	int res = fs_close(&current_session_acc_file);
+	if (res != 0) {
+		LOG_WRN("Unable to close acc file (%i)", res);
+		return res;
+	}
+	res = fs_close(&current_session_gyro_file);
+	if (res != 0) {
+		LOG_WRN("Unable to close gyro file (%i)", res);
+		return res;
+	}
+	return 0;
 }
 
 int nicla_sd_unmount(){

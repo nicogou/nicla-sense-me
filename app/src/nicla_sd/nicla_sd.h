@@ -20,8 +20,9 @@
 #define SOME_REQUIRED_LEN MAX(sizeof(SOME_FILE_NAME), sizeof(SOME_DIR_NAME))
 
 #define SESSION_DIR_NAME		"session_"
-#define SESSION_FILE_NAME		"data.csv"
-#define SESSION_FILE_HEADER		"timestamp,acc_x,acc_y,acc_z,gyr_x,gyr_y,gyr_z\n"
+#define SESSION_ACC_FILE_NAME		"acc.csv"
+#define SESSION_GYRO_FILE_NAME		"gyro.csv"
+#define SESSION_FILE_HEADER		"timestamp,x,y,z\n"
 
 int lsdir(const char *path);
 bool create_some_entries(const char *base_path);
