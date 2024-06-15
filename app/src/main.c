@@ -65,8 +65,6 @@ int main(void)
 	ble_manager_init();
 	ble_manager_start_advertising();
 
-	nicla_sd_init();
-
 	app_init();
 
 	return app_run();

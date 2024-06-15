@@ -19,6 +19,15 @@
 #define SOME_DIR_NAME     "some"
 #define SOME_REQUIRED_LEN MAX(sizeof(SOME_FILE_NAME), sizeof(SOME_DIR_NAME))
 
+#define SESSION_DIR_NAME		"session_"
+#define SESSION_ACC_FILE_NAME		"acc"
+#define SESSION_GYRO_FILE_NAME		"gyro"
+#define SESSION_FILE_EXTENSION		".csv"
+#define SESSION_FILE_HEADER(file)	"timestamp,"file"_x,"file"_y,"file"_z\n"
+
 int lsdir(const char *path);
 bool create_some_entries(const char *base_path);
+int nicla_sd_create_session();
+int nicla_sd_end_current_session();
+int nicla_sd_unmount();
 void nicla_sd_init();

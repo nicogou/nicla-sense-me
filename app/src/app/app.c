@@ -1,4 +1,5 @@
 #include "app.h"
+#include <nicla_sd/nicla_sd.h>
 
 LOG_MODULE_REGISTER(app, CONFIG_APP_LOG_LEVEL);
 
@@ -48,7 +49,16 @@ static void idle_exit(void *o)
 static void recording_entry(void *o)
 {
 	LOG_INF("Recording state");
-	imu_start(100.0, 0);
+	nicla_sd_init();
+	int res = nicla_sd_create_session();
+	if (res < 0){
+		LOG_WRN("Unable to create session directory, returning to idle state.");
+		instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_APP, .type = RECORDING_STOP};
+		zbus_chan_pub(&instructions_chan, &msg, K_MSEC(100));
+	} else {
+		LOG_INF("Creating session n°%i", res);
+		imu_start(IMU_SAMPLE_RATE, 1000);
+	}
 }
 static void recording_run(void *o)
 {
@@ -64,9 +74,14 @@ static void recording_run(void *o)
 
 	case INSTRUCTION_SOURCE_APP:
 		if (s->instruction.type == RECORDING_STOP) {
-			smf_set_state(SMF_CTX(&s_obj), &app_states[IDLE]);
+			/* Don't set state directly here. Instead stop the IMU and wait for meta events
+			   to report that sample rate is down to 0 for both acc and gyro.
+			*/
+			imu_stop();
 		} else if (s->instruction.type == RECORDING_START) {
 			LOG_WRN("Recording already started");
+		} else if (s->instruction.type == RECORDING_GO_TO_IDLE) {
+			smf_set_state(SMF_CTX(&s_obj), &app_states[IDLE]);
 		}
 		break;
 
@@ -78,7 +93,8 @@ static void recording_run(void *o)
 static void recording_exit(void *o)
 {
 	LOG_INF("Leaving Recording state");
-	imu_stop();
+	nicla_sd_end_current_session();
+	nicla_sd_unmount();
 }
 
 /* Populate state table */

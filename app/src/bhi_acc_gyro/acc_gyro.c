@@ -1,4 +1,5 @@
 #include "acc_gyro.h"
+#include "sensors/sensor_buffer.h"
 
 LOG_MODULE_REGISTER(bhi_acc_gyro, CONFIG_APP_LOG_LEVEL);
 
@@ -47,9 +48,12 @@ void parse_acc(const struct bhy2_fifo_parse_data_info *callback_info, void *call
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
 
+	sensor_buffer_put_acc(data, timestamp);
+	/*
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns, (double)((float)data.x / 4096.0f), (double)((float)data.y / 4096.0f),
 		(double)((float)data.z / 4096.0f), common_get_accuracy()[0]);
+	*/
 }
 
 void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *callback_ref)
@@ -70,10 +74,13 @@ void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *cal
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
 
+	sensor_buffer_put_gyro(data, timestamp);
+	/*
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns,
 		(double)((float)data.x * (2 * 3.141592653589793f / 360.0f) / (32768.0f / 2000.0f)),
 		(double)((float)data.y * (2 * 3.141592653589793f / 360.0f) / (32768.0f / 2000.0f)),
 		(double)((float)data.z * (2 * 3.141592653589793f / 360.0f) / (32768.0f / 2000.0f)),
 		common_get_accuracy()[1]);
+	*/
 }
