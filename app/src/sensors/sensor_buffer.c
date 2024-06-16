@@ -1,11 +1,12 @@
 #include "sensor_buffer.h"
 #include "bhy2_defs.h"
 #include "zephyr/logging/log.h"
+#include "nicla_sd/nicla_sd.h"
 
 LOG_MODULE_REGISTER(sensor_buffer, CONFIG_APP_LOG_LEVEL);
 
-static imu_buffer_t acc_buffer = {.wr_idx = 0, .name = "Accel"};
-static imu_buffer_t gyro_buffer = {.wr_idx = 0, .name = "Gyro"};
+static imu_buffer_t acc_buffer = {.wr_idx = 0, .name = SESSION_ACC_FILE_NAME};
+static imu_buffer_t gyro_buffer = {.wr_idx = 0, .name = SESSION_GYRO_FILE_NAME};
 
 void sensor_buffer_put(imu_buffer_t *buf, struct bhy2_data_xyz data, uint64_t timestamp){
 	buf->data[0][buf->wr_idx] = data.x;

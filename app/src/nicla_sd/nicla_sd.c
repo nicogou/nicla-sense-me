@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
+
+#include <app/app.h>
 
 LOG_MODULE_REGISTER(nicla_sd, CONFIG_APP_LOG_LEVEL);
 
@@ -228,6 +231,27 @@ int nicla_sd_end_current_session(){
 	}
 	return 0;
 }
+
+int nicla_sd_write(const char *file_name, int16_t *data, size_t length, int64_t timestamp){
+	struct fs_file_t *file;
+	if (strncmp(file_name, SESSION_ACC_FILE_NAME, strlen(SESSION_ACC_FILE_NAME)) == 0){
+		file = &current_session_acc_file;
+	} else if (strncmp(file_name, SESSION_GYRO_FILE_NAME, strlen(SESSION_GYRO_FILE_NAME)) == 0) {
+		file = &current_session_gyro_file;
+	} else {
+		LOG_ERR("File name not corresponding to a file (%s)", file_name);
+		return -EINVAL;
+	}
+
+	if (length != 3 * IMU_SAMPLE_RATE){
+		LOG_ERR("data to write is the wrong size (%u)", length);
+		return -EFAULT;
+	}
+
+	//fs_write(file, ); // Write data to corresponding SD file.
+	return 0;
+}
+
 
 int nicla_sd_unmount(){
 	return fs_unmount(&mp);
