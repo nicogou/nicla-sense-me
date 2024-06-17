@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <app/app.h>
+#include <sensors/sensor_buffer.h>
 
 LOG_MODULE_REGISTER(nicla_sd, CONFIG_APP_LOG_LEVEL);
 
@@ -232,7 +233,7 @@ int nicla_sd_end_current_session(){
 	return 0;
 }
 
-int nicla_sd_write(const char *file_name, int16_t *data, size_t length, int64_t timestamp){
+int nicla_sd_write(const char *file_name, int16_t *data, size_t length, uint64_t timestamp){
 	struct fs_file_t *file;
 	if (strncmp(file_name, SESSION_ACC_FILE_NAME, strlen(SESSION_ACC_FILE_NAME)) == 0){
 		file = &current_session_acc_file;
@@ -243,12 +244,14 @@ int nicla_sd_write(const char *file_name, int16_t *data, size_t length, int64_t 
 		return -EINVAL;
 	}
 
-	if (length != 3 * IMU_SAMPLE_RATE){
-		LOG_ERR("data to write is the wrong size (%u)", length);
+	if (length != 3 * sizeof(int16_t)){
+		LOG_ERR("Data to write is the wrong size (%u)", length);
 		return -EFAULT;
 	}
 
-	//fs_write(file, ); // Write data to corresponding SD file.
+	char txt[100];
+	sprintf(txt, "%u, %i, %i, %i\n", (uint32_t)timestamp, data[0], data[1], data[2]);
+	fs_write(file, txt, strlen(txt)); // Write data to corresponding SD file.
 	return 0;
 }
 

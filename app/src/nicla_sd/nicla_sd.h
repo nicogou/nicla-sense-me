@@ -29,6 +29,6 @@ int lsdir(const char *path);
 bool create_some_entries(const char *base_path);
 int nicla_sd_create_session();
 int nicla_sd_end_current_session();
-int nicla_sd_write(const char *file_name, int16_t *data, size_t length, int64_t timestamp);
+int nicla_sd_write(const char *file_name, int16_t *data, size_t length, uint64_t timestamp);
 int nicla_sd_unmount();
 void nicla_sd_init();

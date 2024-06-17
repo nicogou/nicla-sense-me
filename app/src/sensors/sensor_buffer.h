@@ -22,8 +22,10 @@ typedef struct {
 	i16_buffer_t y;
 	i16_buffer_t z;
 	u64_buffer_t ts;
+	struct k_work work;
 } imu_buffer_t;
 
 void sensor_buffer_put(imu_buffer_t *buf, struct bhy2_data_xyz data, uint64_t timestamp);
 void sensor_buffer_put_acc(struct bhy2_data_xyz data, uint64_t timestamp);
 void sensor_buffer_put_gyro(struct bhy2_data_xyz data, uint64_t timestamp);
+void sensor_buffer_init();
