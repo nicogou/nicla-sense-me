@@ -8,7 +8,7 @@ LOG_MODULE_REGISTER(sensor_buffer, CONFIG_APP_LOG_LEVEL);
 static imu_buffer_t acc_buffer = {.name = SESSION_ACC_FILE_NAME, .x = {.wr_idx = 0, .rd_idx = 0}, .y = {.wr_idx = 0, .rd_idx = 0}, .z = {.wr_idx = 0, .rd_idx = 0}, .ts = {.wr_idx = 0, .rd_idx = 0}};
 static imu_buffer_t gyro_buffer = {.name = SESSION_GYRO_FILE_NAME, .x = {.wr_idx = 0, .rd_idx = 0}, .y = {.wr_idx = 0, .rd_idx = 0}, .z = {.wr_idx = 0, .rd_idx = 0}, .ts = {.wr_idx = 0, .rd_idx = 0}};
 
-void sensor_buffer_put(imu_buffer_t *buf, struct bhy2_data_xyz data, uint64_t timestamp){
+void sensor_buffer_put(imu_buffer_t *buf, struct bhy2_data_xyz data, uint32_t timestamp){
 	buf->x.wr_buffer[buf->x.wr_idx++] = data.x;
 	buf->y.wr_buffer[buf->y.wr_idx++] = data.y;
 	buf->z.wr_buffer[buf->z.wr_idx++] = data.z;
@@ -21,7 +21,7 @@ void sensor_buffer_put(imu_buffer_t *buf, struct bhy2_data_xyz data, uint64_t ti
 			buf->x.wr_idx = 0;
 			buf->y.wr_idx = 0;
 			buf->z.wr_idx = 0;
-			memcpy(buf->ts.rd_buffer, buf->ts.wr_buffer, IMU_SAMPLE_RATE * sizeof(uint64_t));
+			memcpy(buf->ts.rd_buffer, buf->ts.wr_buffer, IMU_SAMPLE_RATE * sizeof(uint32_t));
 			memcpy(buf->x.rd_buffer, buf->x.wr_buffer, IMU_SAMPLE_RATE * sizeof(int16_t));
 			memcpy(buf->y.rd_buffer, buf->y.wr_buffer, IMU_SAMPLE_RATE * sizeof(int16_t));
 			memcpy(buf->z.rd_buffer, buf->z.wr_buffer, IMU_SAMPLE_RATE * sizeof(int16_t));
@@ -32,11 +32,11 @@ void sensor_buffer_put(imu_buffer_t *buf, struct bhy2_data_xyz data, uint64_t ti
 	}
 }
 
-void sensor_buffer_put_acc(struct bhy2_data_xyz data, uint64_t timestamp){
+void sensor_buffer_put_acc(struct bhy2_data_xyz data, uint32_t timestamp){
 	sensor_buffer_put(&acc_buffer, data, timestamp);
 }
 
-void sensor_buffer_put_gyro(struct bhy2_data_xyz data, uint64_t timestamp){
+void sensor_buffer_put_gyro(struct bhy2_data_xyz data, uint32_t timestamp){
 	sensor_buffer_put(&gyro_buffer, data, timestamp);
 }
 
@@ -45,7 +45,7 @@ static void fifo_full_work_handler(struct k_work *item){
         CONTAINER_OF(item, imu_buffer_t, work);
 
 	int16_t data[3];
-	uint64_t ts;
+	uint32_t ts;
 	for (int ii = 0; ii < IMU_SAMPLE_RATE; ii++){
 		data[0] = buf->x.rd_buffer[buf->x.rd_idx++];
 		data[1] = buf->y.rd_buffer[buf->y.rd_idx++];

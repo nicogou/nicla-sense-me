@@ -233,7 +233,7 @@ int nicla_sd_end_current_session(){
 	return 0;
 }
 
-int nicla_sd_write(const char *file_name, int16_t *data, size_t length, uint64_t timestamp){
+int nicla_sd_write(const char *file_name, int16_t *data, size_t length, uint32_t timestamp){
 	struct fs_file_t *file;
 	if (strncmp(file_name, SESSION_ACC_FILE_NAME, strlen(SESSION_ACC_FILE_NAME)) == 0){
 		file = &current_session_acc_file;
@@ -250,7 +250,7 @@ int nicla_sd_write(const char *file_name, int16_t *data, size_t length, uint64_t
 	}
 
 	char txt[100];
-	sprintf(txt, "%u, %i, %i, %i\n", (uint32_t)timestamp, data[0], data[1], data[2]);
+	sprintf(txt, "%u, %i, %i, %i\n", timestamp, data[0], data[1], data[2]);
 	fs_write(file, txt, strlen(txt)); // Write data to corresponding SD file.
 	return 0;
 }

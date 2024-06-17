@@ -34,7 +34,7 @@ void parse_acc(const struct bhy2_fifo_parse_data_info *callback_info, void *call
 {
 	(void)callback_ref;
 	struct bhy2_data_xyz data;
-	uint32_t s, ns;
+	uint32_t s, ns, ms;
 	if (callback_info->data_size != 7) /* Check for a valid payload size. Includes sensor ID */
 	{
 		return;
@@ -47,8 +47,9 @@ void parse_acc(const struct bhy2_fifo_parse_data_info *callback_info, void *call
 	timestamp = timestamp * 15625; /* Timestamp is now in nanoseconds */
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
+	ms = (uint32_t)(timestamp / UINT64_C(1000000));
 
-	sensor_buffer_put_acc(data, timestamp);
+	sensor_buffer_put_acc(data, ms);
 	/*
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns, (double)((float)data.x / 4096.0f), (double)((float)data.y / 4096.0f),
@@ -60,7 +61,7 @@ void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *cal
 {
 	(void)callback_ref;
 	struct bhy2_data_xyz data;
-	uint32_t s, ns;
+	uint32_t s, ns, ms;
 	if (callback_info->data_size != 7) /* Check for a valid payload size. Includes sensor ID */
 	{
 		return;
@@ -73,8 +74,9 @@ void parse_gyro(const struct bhy2_fifo_parse_data_info *callback_info, void *cal
 	timestamp = timestamp * 15625; /* Timestamp is now in nanoseconds */
 	s = (uint32_t)(timestamp / UINT64_C(1000000000));
 	ns = (uint32_t)(timestamp - (s * UINT64_C(1000000000)));
+	ms = (uint32_t)(timestamp / UINT64_C(1000000));
 
-	sensor_buffer_put_gyro(data, timestamp);
+	sensor_buffer_put_gyro(data, ms);
 	/*
 	LOG_DBG("SID: %u; T: %u.%09u; x: %f, y: %f, z: %f; acc: %u", callback_info->sensor_id, s,
 		ns,
