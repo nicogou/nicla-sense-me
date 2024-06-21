@@ -53,7 +53,7 @@ static void recording_entry(void *o)
 	int res = nicla_sd_create_session();
 	if (res < 0){
 		LOG_WRN("Unable to create session directory, returning to idle state.");
-		instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_APP, .type = RECORDING_STOP};
+		instruction_msg_t msg = {.source = INSTRUCTION_SOURCE_APP, .type = RECORDING_GO_TO_IDLE};
 		zbus_chan_pub(&instructions_chan, &msg, K_MSEC(100));
 	} else {
 		LOG_INF("Creating session n°%i", res);
@@ -99,8 +99,8 @@ static void recording_exit(void *o)
 
 /* Populate state table */
 static const struct smf_state app_states[] = {
-	[IDLE] = SMF_CREATE_STATE(idle_entry, idle_run, idle_exit),
-	[RECORDING] = SMF_CREATE_STATE(recording_entry, recording_run, recording_exit),
+	[IDLE] = SMF_CREATE_STATE(idle_entry, idle_run, idle_exit, NULL, NULL),
+	[RECORDING] = SMF_CREATE_STATE(recording_entry, recording_run, recording_exit, NULL, NULL),
 };
 
 int app_init()
